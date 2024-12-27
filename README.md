@@ -1,4 +1,4 @@
-# Discord_Bot_Project_Fixed
+# Discord_Bot_Project
 I moved my original project here into this new repo.
 In the original repo, the bot token was open to the public
 which presented a security risk to users and myself. 
