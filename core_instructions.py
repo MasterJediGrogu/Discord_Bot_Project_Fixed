@@ -1,12 +1,13 @@
 from typing import Final
 import os
 from dotenv import load_dotenv
-from discord import Intents, Client, Message
-from responses import get_response, retrieve_weather
+from discord import Intents, Interaction
+from discord.ext import commands
+from responses import retrieve_weather
 
 #STEP 0: LOAD OUR TOKEN FROM SOMEWHERE SAFE
 
-# Load environment variables from a .env file into the program's environment
+# Load environment variables from a .env file int o the program's environment
 load_dotenv()
 
 # Get the value of the "DISCORD_TOKEN" env. variable
@@ -21,57 +22,33 @@ WEATHER_API_KEY: Final[str] = os.getenv('WEATHER_API_KEY')
 
 intents: Intents = Intents.default()
 intents.message_content = True #NOQA
-client: Client = Client(intents=intents)
+bot = commands.Bot(command_prefix=".", intents=intents)
 
-# Step 2: receiving messages and sending
-async def send_message(message: Message, user_message: str) -> None:
-    # check if there is a user message
-    if not user_message:
-        print('(Message was empty because intents were not enabled)')
-        return
-
-    if is_private := user_message[0] == '?':
-        user_message = user_message[1:] # string slicing to not include question mark
-    
+# (WEATHER SECTION)
+# the inclusion of defining a slash command for weather
+@bot.tree.command(name="weather", description="Get Current Weather Information for a City")
+async def weather(interaction: Interaction, city: str):
+  #  """Handling the /weather slash command process here."""
     try:
-        response: str
-        if user_message.startswith('weather'):
-            city = user_message[len('weather '):].strip()
-            response = retrieve_weather(city, WEATHER_API_KEY)
-        else:
-            response = get_response(user_message)
-        await message.author.send(response) if is_private else await message.channel.send(response)
+        response = retrieve_weather(city, WEATHER_API_KEY)
+        await interaction.response.send_message(response)
     except Exception as e:
-        print(e)
+        print(f'Error Retrieving Weather: {e}')
+        await interaction.response.send_message("Sorry, I could not get the weather. Please try again.")
 
-# STEP 3: Startup for bot section
-@client.event
-async def on_ready() -> None:
-    print(f'{client.user} is now running!')
+# (STARTUP SECTION)
+@bot.event
+async def on_ready():
+    try:
+        await bot.tree.sync() # sync all the slash commands
+        print(f'Bot is ready and logged in as {bot.user}')
+    except Exception as e:
+        print(f'Error syncing commands: {e}')
 
 
-# STEP 4: Handle incoming messages
-@client.event
-async def on_message(message: Message) -> None:
-    if message.author == client.user:
-        return
-    
-    user_message: str = message.content
-
-    # FOR OUR EYES ONLY. AN EMERGENCY SHUTDOWN
-    if user_message.lower() == '!shutdown' and message.author.guild_permissions.administrator:
-        await message.channel.send("I'll be back...")
-        await client.close()
-        return
-
-    # Only respond with a prefix of choie
-    if user_message.startswith('.'):
-        print(f'[Message] {message.author}: "{user_message}"')
-        await send_message(message, user_message[1:]) # remove the . prefix before process
-
-# STEP 5: Main entry point
-def main() -> None:
-    client.run(token=TOKEN)
+# (MAIN ENTRY POINT)
+def main():
+    bot.run(TOKEN)
 
 if __name__ == '__main__':
     main()

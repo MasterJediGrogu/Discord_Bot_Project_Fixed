@@ -6,3 +6,9 @@ which presented a security risk to users and myself.
 This project is a Discord bot that communicates with a weather API.
 In the future, I plan to include other components such as surverying local traffic
 reports, security reports on users accessing/communicating on Discord chats.
+
+# Update 12/28
++ Slash command added
++ Added shutdown command for admin users only
+
+- Removed prefix ".weather"
