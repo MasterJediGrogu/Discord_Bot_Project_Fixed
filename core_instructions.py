@@ -45,7 +45,35 @@ async def weather(interaction: Interaction, city: str):
 @bot.tree.command(name="shutdown", description= "Shutdown the bot. (Admin USE only) CAUTION: Will shutdown other instances. Contact system admin")
 async def shutdown(interaction: Interaction):
     # check if user has Administrator or Manage Channels Permissions
-    if (interaction.user.guild_permissions.adminstrator or)
+    if (interaction.user.guild_permissions.adminstrator or
+        interaction.user.guild_permissions.manage_channels):
+        await interaction.response.send_message("Shutting down...")
+        await bot.close() # Shutdown the bot
+    else:
+        # Find roles with either Admin or Manage Channel permission to alert admin team
+        eligible_roles = [
+            role for role in interaction.guild.roles
+            if role.permissions.adminstrator or role.permissions.manage_channels
+        ]
+
+        if eligible_roles:
+            # Mention all roles with the permission
+            role_mentions = ", ".join([role.mention for role in eligible_roles])
+            alert_message= (
+                f" **Unauthorized Shutdown Attempt** \n"
+                f" User {interaction.user.mention} tried to SHUT ME DOWN!! \n"
+                f" Alert: {role_mentions}"
+            )
+            # Alert the channel user is inS
+            await interaction.response.send_message(
+                f" You don't have permission to shut me down. Alerting: {role_mentions}"
+            )
+            await interaction.channel.send(alert_message)
+        else:
+            # If no roles were found with the required permissions
+            await interaction.response.send_message(
+                "You don't have permission to shut me down. No roles to alert were found."
+            )
 # ==========================================================================================================
 
 
