@@ -24,6 +24,7 @@ intents: Intents = Intents.default()
 intents.message_content = True #NOQA
 bot = commands.Bot(command_prefix=".", intents=intents)
 
+# ==========================================================================================================
 # (WEATHER SECTION)
 # the inclusion of defining a slash command for weather
 @bot.tree.command(name="weather", description="Get Current Weather Information for a City")
@@ -36,6 +37,19 @@ async def weather(interaction: Interaction, city: str):
         print(f'Error Retrieving Weather: {e}')
         await interaction.response.send_message("Sorry, I could not get the weather. Please try again.")
 
+# ==========================================================================================================
+
+# (ADMIN SECTION)
+
+#                                         =Shutdown Command=
+@bot.tree.command(name="shutdown", description= "Shutdown the bot. (Admin USE only) CAUTION: Will shutdown other instances. Contact system admin")
+async def shutdown(interaction: Interaction):
+    # check if user has Administrator or Manage Channels Permissions
+    if (interaction.user.guild_permissions.adminstrator or)
+# ==========================================================================================================
+
+
+# ==========================================================================================================
 # (STARTUP SECTION)
 @bot.event
 async def on_ready():
@@ -44,11 +58,13 @@ async def on_ready():
         print(f'Bot is ready and logged in as {bot.user}')
     except Exception as e:
         print(f'Error syncing commands: {e}')
+# ==========================================================================================================
 
-
+# ==========================================================================================================
 # (MAIN ENTRY POINT)
 def main():
     bot.run(TOKEN)
 
 if __name__ == '__main__':
     main()
+# ==========================================================================================================
