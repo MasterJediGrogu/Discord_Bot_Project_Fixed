@@ -35,7 +35,7 @@ def get_response(user_input: str) -> str:
     elif 'roll dice' in lowered:
         return f'You rolled: {randint(1,6)}'
     elif 'kys' in lowered:
-        return choice (['Nah, off yourself bruh',
+        return choice (['Nah.',
                        'Look whos talkin',
                        'Right back at you'])
     else:
