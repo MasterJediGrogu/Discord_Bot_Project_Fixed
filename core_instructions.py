@@ -41,7 +41,7 @@ async def weather(interaction: Interaction, city: str):
 
 # (ADMIN SECTION)
 
-#                                         =Shutdown Command=
+#                                           =Shutdown Command=
 @bot.tree.command(name="shutdown", description="Shutdown the bot. (Admin Use only) CAUTION: Will shut down other instances.")
 async def shutdown(interaction: Interaction):
     """
@@ -52,17 +52,20 @@ async def shutdown(interaction: Interaction):
     print(f'User {interaction.user} Permissions: {interaction.user.guild_permissions}')
 
     # Acknowledge the interaction immediately
+    # Discord  requires a response to slash commands within 3 secs
+    # Allows Discord bot to avoid "application not responding" error
     await interaction.response.defer()
 
     # Check if the user has the required permissions
     if interaction.user.guild_permissions.administrator or interaction.user.guild_permissions.manage_channels:
-        await interaction.followup.send("Shutting down...")
+        await interaction.followup.send("Shutting down. Please contact sys admin.")
         await bot.close()  # Shutdown the bot
     else:
         # DEBUG: Which permission failed
         print(f'User {interaction.user} lacks required permissions: Administrator or Manage Channels')
 
         # Find roles with either Administrator or Manage Channels permission to alert admin team
+        # Check all server roles for roles with these permitted permissions
         eligible_roles = [
             role for role in interaction.guild.roles
             if role.permissions.administrator or role.permissions.manage_channels
@@ -70,6 +73,7 @@ async def shutdown(interaction: Interaction):
 
         if eligible_roles:
             # Mention all roles with the permissions
+            # Provided a message for the roles and mention the eligbile_roles (with permissions)
             role_mentions = ", ".join([role.mention for role in eligible_roles])
             alert_message = (
                 f"🚨 **Unauthorized Shutdown Attempt** 🚨\n"
@@ -78,12 +82,15 @@ async def shutdown(interaction: Interaction):
             )
 
             # Send alert to the channel
+            # Notify the user and alert the eligible roles in channel where shutdown started
             await interaction.followup.send(
                 f"You don't have permission to shut me down! Alerting: {role_mentions}"
             )
             await interaction.channel.send(alert_message)
         else:
             # If no roles were found with the required permissions
+            # Inform user
+            # ALso if no roles were found
             await interaction.followup.send(
                 "You don't have permission to shut me down. No roles to alert were found."
             )
