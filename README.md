@@ -7,10 +7,6 @@ This project is a Discord bot that communicates with a weather API.
 In the future, I plan to include other components such as surverying local traffic
 reports, security reports on users accessing/communicating on Discord chats.
 
-# This file is part of Discord_Bot_Project.
-# Copyright (c) 2024 MasterJediGrogu.
-# Licensed under the MIT License. See the LICENSE file for details.
-
 
 # Update 12/29
 + Shutdown command includes Admin and Manage Channels Role.
