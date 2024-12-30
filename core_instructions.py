@@ -5,6 +5,9 @@ from discord import Intents, Interaction
 from discord.ext import commands
 from responses import retrieve_weather
 
+import random # for dice roll process
+from discord import app_commands
+
 #STEP 0: LOAD OUR TOKEN FROM SOMEWHERE SAFE
 
 # Load environment variables from a .env file int o the program's environment
@@ -39,7 +42,42 @@ async def weather(interaction: Interaction, city: str):
         await interaction.response.send_message("Sorry, I could not get the weather. Please try again.")
 
 # ==========================================================================================================
+# ==========================================================================================================
+# Dice section
+@bot.tree.command(name="roll_die", description= "Roll a die")
+@app_commands.describe(
+    sides = "# of sides on die (6 is normal)", # Parameter for sides
+    count = '# of dice to roll (1 is normal)', # Parameter for count
+)
+async def roll_die(interaction: Interaction, sides: int = 6, count: int = 1):
+    # roll a die or multiple dice and return results
 
+    try:
+        if sides < 1 or count < 1:
+            await interaction.response.send_message("Enter a positive number for both sides and count")
+            return
+        
+        # Die roll process
+
+        # Dice roll results as a list
+        rolls = [random.randint(1, sides) for _ in range(count)]
+        
+        # change the list into a string using join string function
+
+        # convert list of rolls to a string
+        rolls_str = ', '.join(map(str, rolls))
+
+        # Calculate total sum of rolls using sum function
+        total = sum(rolls)
+
+        # provide response back to user
+        response_to_user = f' You rolled {count} d{sides} : {rolls_str}\n**Total:** {total}'
+        await interaction.response.send_message(response_to_user)
+    except Exception as error:
+        print(f'There was an error with roll_die: {error}')
+        await interaction.response.send_message("An error happened with rolling the die")
+
+# ==========================================================================================================
 # (ADMIN SECTION)
 
 #                                           =Shutdown Command=
