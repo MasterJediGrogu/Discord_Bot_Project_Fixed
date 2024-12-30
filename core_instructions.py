@@ -22,6 +22,7 @@ WEATHER_API_KEY: Final[str] = os.getenv('WEATHER_API_KEY')
 
 intents: Intents = Intents.default()
 intents.message_content = True #NOQA
+# Maintain the prefix "." for old command without slash
 bot = commands.Bot(command_prefix=".", intents=intents)
 
 # ==========================================================================================================
@@ -46,7 +47,6 @@ async def weather(interaction: Interaction, city: str):
 async def shutdown(interaction: Interaction):
     """
     Shuts down the bot if the user has Administrator or Manage Channels permissions.
-    Dynamically checks for roles with these permissions and alerts them if a non-eligible user attempts to shut down.
     """
     # DEBUG: Log user permissions
     print(f'User {interaction.user} Permissions: {interaction.user.guild_permissions}')
